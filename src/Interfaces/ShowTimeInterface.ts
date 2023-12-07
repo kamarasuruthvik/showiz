@@ -2,8 +2,8 @@ export interface Showtime {
     _id: string;
     movieId: string;
     screenId: string;
-    startTime: string;
-    endTime: string;
+    startTime?: string;
+    endTime?: string;
     price: number;
     discountPrice: number;
     isActive: boolean;
@@ -12,4 +12,5 @@ export interface Showtime {
     __v: number;
     screenName?:  string;
     screenType?: string;
+    screenCost?: number
 }

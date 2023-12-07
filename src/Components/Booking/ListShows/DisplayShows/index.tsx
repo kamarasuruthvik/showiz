@@ -3,7 +3,7 @@ import { Button, Container, Flex, Text, Tooltip } from '@mantine/core';
 import { Theatre } from '../../../../Interfaces/TheatreInterface';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { Showtime } from '../../../../Interfaces/ShowTimeInterface';
-import { convertTo12HourFormat } from '../../../../utils/Date';
+import { before6PM, convertTo12HourFormat } from '../../../../utils/Date';
 import { useNavigate } from 'react-router-dom';
 interface DisplayShowsProps {
   theatres: Theatre[]
@@ -19,17 +19,22 @@ const DisplayShows: React.FC<DisplayShowsProps> = ({theatres}) => {
   const theatresArray = theatres.map((theatre)=>{
       let showsArray: Showtime[] = [];
       theatre.screens.map((screen)=>{
-      showsArray = screen.showtimes.map((showtime)=>{
+      let tempShowsArray = screen.showtimes.map((showtime)=>{
         return {
         ...showtime, 
         screenType: screen.screenType,
         screenName: screen.screenName,
-        isActive: screen.isActive
+        screenCost: screen.cost,
       }});
+      showsArray = showsArray.concat(tempShowsArray);
     })
+    console.log("This is the shows array ",showsArray);
     showsArray.sort((a: Showtime, b: Showtime) => {
-      return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-    });
+      const dateA = a.startTime ? new Date(a.startTime) : new Date();
+      const dateB = b.startTime ? new Date(b.startTime) : new Date();
+  
+      return dateA.getTime() - dateB.getTime();
+  });
     const theatreEntry = {...theatre, shows: showsArray};
     console.log(theatreEntry);
     return theatreEntry;
@@ -46,12 +51,12 @@ const DisplayShows: React.FC<DisplayShowsProps> = ({theatres}) => {
             </Flex>
             <Flex direction={"row"} gap="md" align="center" mb="sm">
               {theatre.shows.map((show)=>(
-                <Tooltip label={`$ ${show.price}`} transitionProps={{ transition: 'skew-down', duration: 400 }}>
+                <Tooltip label={`$ ${(show.screenCost || 15) - (before6PM(show.startTime || "") ? 3 : 0)}`} transitionProps={{ transition: 'skew-down', duration: 400 }}>
                   <button
                     onClick={()=>handleNavigation(show.movieId, show._id, show.screenId)}
                     className={`secondry-button makePointer 
                     ${show.isActive? "success":"disabled"}`}>
-                    <Text size="sm">{convertTo12HourFormat(show.startTime)}</Text>
+                    <Text size="sm">{convertTo12HourFormat(show.startTime|| "")}</Text>
                     {show.screenType==="IMAX" && <Text size="xs">IMAX</Text>}
                   </button>
                 </Tooltip>

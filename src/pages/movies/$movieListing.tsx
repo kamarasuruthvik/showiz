@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import MovieBanner from './MovieBanner/index';
+import MovieBanner from '../../Components/Movie/MovieBanner';
 import { Movie } from '../../Interfaces/MovieInterface';
 import { getAllMovies } from '../../api/moviesApi';
-import { Center, Container, Flex, Text } from '@mantine/core';
+import { Center, Flex } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import MembershipBanner from './MembershipBanner';
+import MembershipBanner from '../../Components/Movie/MembershipBanner';
 import { useLocalStorage } from "@mantine/hooks";
 import { User } from '../../Interfaces/UserInterface';
 import { useParams } from 'react-router-dom';
@@ -19,6 +19,7 @@ const MovieListing = () => {
 
 
   useEffect(() => {
+    console.log(moviedetail)
     getAllMovies()
       .then(response => {
         console.log("Getting Movies ", response.data)
@@ -401,9 +402,6 @@ const MovieListing = () => {
   ];
   return (
     <Flex direction="column" align="center">
-      <Container w="760px">
-        <Text mr="lg" mb="sm" mt="md" w={"100%"} fw={"bold"} size="24px" ta="start">Now Showing!</Text>
-      </Container>
       <Carousel
         withIndicators
         slideSize={{ base: '100%', sm: '50%', md: '20%' }}
@@ -418,22 +416,6 @@ const MovieListing = () => {
         ))}
       </Carousel>
       <MembershipBanner user={user}/>
-      <Container w="760px">
-        <Text mr="lg" mb="sm" mt="md" w={"100%"} fw={"bold"} size="24px" ta="start" c="gray">Upcoming Movies</Text>
-      </Container>
-      <Carousel
-        withIndicators
-        slideSize={{ base: '100%', sm: '50%', md: '20%' }}
-        slideGap={{ base: 0, sm: 'md' }}
-        loop
-        align="start"
-        slidesToScroll={10}
-        maw={760}
-      >
-        {movies.map((movie) => (
-          <Carousel.Slide><MovieBanner {...movie} key={movie._id} upcoming /></Carousel.Slide>
-        ))}
-      </Carousel>
     </Flex>
   )
 }
